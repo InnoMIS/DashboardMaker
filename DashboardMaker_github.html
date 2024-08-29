@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashboardMaker</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.2.0/gridstack.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.2.0/gridstack-all.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.22.1/bootstrap-table.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.22.1/bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+    <script src="DashboardHelpers.js"></script>
+    <style>
+        .box {
+            background-color: #0d6efd;
+            color: white;
+            padding: 3px;
+            width: 150px;
+            border: none;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .boxShort{
+            background-color: #0d6efd;
+            color: white;
+            padding: 2px;
+            width: 90px;
+            border: none;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        select {
+            font-family: 'FontAwesome', 'Second Font name';
+        }
+    </style>
+</head>
+
+<body>
+    <!--標題-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid d-flex">
+            <div class="d-flex align-items-center">
+                <h1 style="display: inline; font-weight: bolder;">DashboardMaker</h1>
+                <per id="DB_version" style="font-weight: bolder; margin-left: 5px;"></per>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#DB_navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="DB_navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+        
+                <div class="d-flex align-items-center">
+                    <per class="me-2">響應式Grid:</per>  
+                    <div class="form-check form-switch me-2">
+                        <input class="form-check-input" type="checkbox" id="chkRWDGrid" style="height: 25px; width: 50px;" checked>
+                    </div>
+
+                    <button id="perviewBtn" class="btn btn-primary me-2">Perview</button> 
+                    
+                    <p class="me-2 mt-1 mb-0">ColorType:</p>
+                    <select id="sltColorType" class="boxShort me-3" style="width: auto;">
+                        <option value="0" selected>A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">D</option>
+                        <option value="4">E</option>
+                        <option value="5">F</option>
+                        <option value="6">G</option>
+                        <option value="7">H</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </nav> 
+    <!--控制區-->
+    <nav class="navbar mt-1 navbar-expand-lg" style="background-color: rgb(230, 230, 230);">
+        <div class="container-start d-flex navControl">
+            <div class="d-flex align-items-center" id="DB_controlArea">
+                <button id="addWidgetBtn" class="btn btn-primary ms-2">Add Widget</button>
+                <button id="clearBtn" class="btn btn-primary ms-2">Clear</button>
+                <button id="saveBtn" class="btn btn-primary ms-2">Save</button>
+            </div>
+            
+            <button class="navbar-toggler float-right"type="button" data-bs-toggle="collapse" data-bs-target="#DB_mainContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <div class="collapse navbar-collapse" id="DB_mainContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+    
+                
+                <div class="d-flex align-items-center mb-2 mb-lg-0">
+                    <per class="ms-2" style="font-weight: bold">匯入檔案:</per>
+                    <input class="form-control ms-2" type="file" id="DB_fileJson" style="width:80%;display: inline-flex;">
+                </div>
+                <div class="d-flex align-items-center mb-2 mb-lg-0">
+                    <per class="ms-2">背景顏色:</per>
+                    <input type="color" class="form-control form-control-color ms-2" id="DB_GridColor" value="#ffe4c4" style="display:inline">
+                </div>
+                <div class="d-flex align-items-center mb-2 mb-lg-0">
+                    <per class="ms-2">批量更改widget:</per>
+                    <select class="selectpicker ms-2" multiple data-live-search="true" data-actions-box="true"></select>
+                    <button class="btn btn-primary ms-2" id="setWidgetBtn" data-bs-toggle="offcanvas" data-bs-target="#DB_setWindows"><i class="fas fa-wrench"></i></button>
+                </div>
+
+            </div>  
+        </div>
+    </nav>
+    
+
+    <!--Grid-->
+    <div id="DB_grid" style="background-color: rgb(230, 230, 230);padding: 10px;padding-top: 5px;">
+        <div class="grid-stack" style="background-color: bisque;"></div>
+    </div>
+    
+    <!--Save List-->
+    <div class="accordion" style="margin-top: 5px;">
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#DB_saveList">
+                    Save list
+                </button>
+            </h3>
+            <div id="DB_saveList" class="accordion-collapse collapse">
+                <div class="accordion-body" id="DB_saveLayout">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!--設定視窗-->
+    <div class="offcanvas" data-bs-scroll="true" tabindex="-1" id="DB_setWindows">
+        <div class="offcanvas-header">
+            <h3 class="offcanvas-title" style="font-weight: bolder;">詳細設定</h3>
+            <div>正在設定ID:</div>
+            <per id="DB_setIDShow" style="font-weight: bold; font-size: 30px; color:#dc3545;"></per>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" id="DB_closeSet"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="DB_titleDataSet">
+                <per>資料 :</per>
+                <input type="text" class="mb-2" placeholder="Data" id="DB_txtWidgetData" style="width:80%">
+                <per>Title :</per>
+                <input type="text" class="mb-2" placeholder="Title" id="DB_txtTitle" style="width:80%">
+            </div>
+            <div>
+                <h4 style="font-weight: bold;">Widget</h4>
+                <hr>
+                <div style="display: flex; align-items: center;">
+                    <per>邊框粗細:</per>
+                    <input type="range" class="form-range ms-2" max="10" min="0" value="1" id='DB_rngwidgetBorder' style="width:70%">
+                    <per id="DB_widgetBorderShow" class="ms-2"></per>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <per>邊框:</per>
+                    <input type="color" class="form-control form-control-color ms-2" id="DB_widgetBorderColor" value="#000000" style="display:inline">
+                    <input type="range" class="form-range ms-2" max="1" min="0" value="1" step="0.1" id='DB_rngwidgetBorderOpacity' style="width:60%">
+                    <per id="DB_widgetBorderOpacityShow" class="ms-2"></per>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <per>背景:</per>
+                    <input type="color" class="form-control form-control-color ms-2" id="DB_widgetBGColor" value="#FFFFFF" style="display:inline">
+                    <input type="range" class="form-range ms-2" max="1" min="0" value="0.8" step="0.1" id='DB_rngwidgetOpacity' style="width:60%">
+                    <per id="DB_widgetOpacityShow" class="ms-2"></per>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <per>Padding:</per>
+                    <input type="range" class="form-range ms-2" max="20" min="0" value="5" step="1" id='DB_rngwidgetPadding' style="width:74%">
+                    <per id="DB_widgetPaddingShow" class="ms-2"></per>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <per>Margin:</per>
+                    <input type="range" class="form-range ms-2" max="15" min="0" value="0" step="1" id='DB_rngwidgetMargin' style="width:77%">
+                    <per id="DB_widgetMarginShow" class="ms-2"></per>
+                </div>
+                <div style="display: flex; align-items: center;" id="DB_headerSet">
+                    <per>header:</per>
+                    <div class="form-check form-switch ms-2" style="display:inline-flex">
+                        <input class="form-check-input" type="checkbox" id="chkWidgetEvent" style="height: 20px;width: 40px;">
+                    </div>
+                    <input type="color" class="form-control form-control-color ms-2" id="widgetHeaderColor" value="#B0B0B0" style="display:inline">
+                    <input type="range" class="form-range ms-2" max="1" min="0" value="0.5" step="0.1" id='rngwidgetHeaderOpacity' style="width:30%">
+                    <per id="widgetHeaderOpacityShow" class="ms-2"></per>
+                    <per>header文字:</per>
+                    <input type="range" class="form-range ms-2" max="50" min="1" value="15" id="rngHeaderFontSize" style="width:45%">
+                    <per id="rngHeaderFontSizeShow" class="ms-2"></per>
+                    <input type="color" class="form-control form-control-color ms-2" id="rngHeaderFontColor" value="#000000" style="display:inline">
+                </div>
+                <div class="mb-2" id="DB_txtSet">
+                    <per>新增文本:</per>
+                    <input type="text" class=" mt-2" placeholder="新增文字" id="newText">
+                    <div id="DB_newtxtset">
+                        <select id ="newArea" class="boxShort">
+                            <option value="top" selected>上</option>
+                            <option value="bottom">下</option>
+                        </select> 
+                        <input type="range" class="form-range ms-2" max="50" min="1" value="15" id="rngNewFontSize" style="width:40%">
+                        <per id="newFontSizeShow" class="ms-2"></per>
+                        <input type="color" class="form-control form-control-color ms-2" id="newFontSizeColor" value="#000000" style="display:inline">
+                    </div>
+                </div>
+            </div>
+            <div id="DB_set">
+                <div class="type" id="DB_chartSet">
+                    <h4 style="font-weight: bold;">圖表</h4>
+                    <hr>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">標示 :</per>
+                        <div class="form-check form-switch ms-2" style="display: inline-flex;">
+                            <input class="form-check-input" type="checkbox" id="chkLegendShow" style="height: 20px;width: 40px;">
+                        </div>
+                        <select id ="sltLegend" class="boxShort ms-2">
+                            <option value="top" selected>上</option>
+                            <option value="bottom">下</option>
+                            <option value="left">左</option>
+                            <option value="right">右</option>
+                        </select>
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">數值 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkSpecialDataShow" style="height: 20px;width: 40px;" checked>
+                        </div>
+                        <input type="range" class="form-range ms-2" max="30" min="1" value="15" id="rngDataFontSize" style="width:40%">
+                        <per id="DataFontSizeShow" class="ms-2"></per>
+                        <input type="color" class="form-control form-control-color ms-2" id="DB_datalabelsColor" value="#000000" style="display:inline">
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">        
+                        <input type="text" class="ms-2" placeholder="prefix" id="txtPrefix" style="width: 40%;">
+                        <input type="text" class="ms-2" placeholder="suffix" id="txtSuffix" style="width: 40%;">
+                        <input type="number" class="ms-2" value="2" min="0" max="3" id="txtafterNum" style="width: 20%;">
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">數值%數 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkpercentageData" style="height: 20px;width: 40px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="type" id="DB_barSet">
+                    <h4 style="font-weight: bold;">長條圖</h4>
+                    <hr>
+                    <div class="mb-2">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">起點 :</per>
+                        <select id ="sltStart" class="box">
+                            <option value="x" selected>X軸</option>
+                            <option value="y">Y軸</option>
+                        </select>
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">堆疊 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkStack" style="height: 20px;width: 40px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="type" id="DB_lineSet">
+                    <h4 style="font-weight: bold;">折線圖</h4>
+                    <hr>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">填滿 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkFill" style="height: 20px;width: 40px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="type" id="DB_doughnutSet">
+                    <h4 style="font-weight: bold;">圓環圖</h4>
+                    <hr>
+                </div>
+                <div class="type" id="DB_pieSet">
+                    <h4 style="font-weight: bold;">圓餅圖</h4>
+                    <hr>
+                </div>
+                <div class="type" id="DB_circleSet">
+                    <div class="mb-2">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">角度 :</per>
+                        <select id ="sltAngle" class="box">
+                            <option value="360" selected>360</option>
+                            <option value="180">180</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="type" id="DB_tableSet">
+                    <h4 style="font-weight: bold;">表格</h4>
+                    <hr>
+                </div>
+                <div class="type" id="DB_progressSet">
+                    <h4 style="font-weight: bold;">進度條</h4>
+                    <hr>
+                    <div class="mb-2">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">形狀 :</per>
+                        <select id ="sltShape" class="box">
+                            <option value="bar">長條</option>
+                            <option value="fullCircle" selected>圓圈</option>
+                            <option value="halfCircle">半圓</option>
+                        </select>
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">文字顏色 :</per>
+                        <input type="color" class="form-control form-control-color ms-2" id="centerTxtColor" value="#000000" style="display:inline">
+                    </div>
+                </div>
+                <div class="type" id="DB_keySet">
+                    <h4 style="font-weight: bold;">數值</h4>
+                    <hr>
+                    <div class="mb-2">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">一行幾個 :</per>
+                        <input type="number" class="ms-1" min="1" max="10" value="4" id="txtGrid">
+                    </div>
+                </div>
+                <div class="type" id="DB_mixSet">
+                    <h4 style="font-weight: bold;">混和圖</h4>
+                    <hr>
+                </div>
+                <div class="type" id="DB_customSet">
+                    <h4 style="font-weight: bold;">自訂HTML</h4>
+                    <hr>
+                    <div>
+                        <h5 style="font-weight: bold;">請於資料處填入想添加的HTML程式碼</h5>
+                    </div>
+                </div>
+                <div class="type" id="DB_tickSet">
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">X軸標題 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkXTitle" style="height: 20px;width: 40px;">
+                        </div>
+                        <input type="text" class="ms-2" placeholder="" id="txtXLabel">
+                    </div>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">Y軸標題 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkYTitle" style="height: 20px;width: 40px;">
+                        </div>
+                        <input type="text" class="ms-2" placeholder="" id="txtYLabel">
+                    </div>
+                </div>
+                <div class="type" id="DB_radarSet">
+                    <h4 style="font-weight: bold;">雷達圖</h4>
+                    <hr>
+                    <div class="mb-2" style="display: flex; align-items: center;">
+                        <per class="me-1 ms-1" style="font-family: Microsoft YaHei;">空心 :</per>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="chkRadarFill" style="height: 20px;width: 40px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        let version = '0.0.1';
+        $("#DB_version").text(version);
+        let grid = GridStack.init({
+            float: true,
+            margin: 0,
+            columnOpts: {
+                breakpoints: [{w:768, c:1},{w:1200, c:12}],
+            },
+        });
+        let widgetIndex = 1;
+        let dataAll = {};
+        $(function () {
+            //預設兩個widget
+            addWidget(5,5);
+            addWidget(2,2);
+            $(window).on('resize', function() {
+                let md = $(window).width() < 960;
+                if (md) {
+                    $(".navControl").addClass("container-fluid")
+                    $(".navControl").removeClass("container-start")
+                }else{
+                    $(".navControl").addClass("container-start")
+                    $(".navControl").removeClass("container-fluid")
+                }
+                
+            });
+        });
+
+
+
+        //新增按鈕函式
+        function addWidget(w, h, x = undefined, y = undefined, type = "bar") {
+            let id = widgetIndex;
+            let data = dataAll[id];
+            let widget;
+            widget = grid.addWidget(`<div class="grid-stack-item" gs-id="${id}"></div>`, { w: w, h: h, x : x, y : y});
+            $(widget).append($('<div>', { 'class': 'grid-stack-item-content' })
+                .append($('<div>',{'class': 'widgetShow',"style":'height:100%'})
+                    .append($('<div>', { 'style': `background-color: ${adjustColor($('#widgetHeaderColor').val(), $('#rngwidgetHeaderOpacity').val())}; width: 100%;display: ${$("#chkWidgetEvent").prop('checked')?'block':'none'}`, 'class':'DB_header'})
+                        .append($('<h6>', { 'class': 'ms-2', 'style': `display: inline; font-weight: bolder; font-size: ${$("#rngHeaderFontSize").val()}px; 'color': ${ $("#rngHeaderFontColor").val()}` }))
+                    )
+                    .append($('<div>', { 'class': `DB_textArea`,'location':"top",'style':'text-align: center;font-size: 15px;color: black'}))
+                    .append($('<div>', { 'class': `DB_body`,'wg-type':`${type}`}))
+                )
+            );
+            $(widget).find(`.DB_body`).css({
+                'height': `calc(100% - ${bodyHeight(widget)}px)`,
+            });
+            
+            //CSS
+            $(widget).find('.grid-stack-item-content').css({
+                'padding': `${$('#DB_rngwidgetPadding').val()}px`,
+                'margin': `${$('#DB_rngwidgetMargin').val()}px`,
+                'background-color': adjustColor($("#DB_widgetBGColor").val(),$('#DB_rngwidgetOpacity').val()),
+                'border-width': `${$('#DB_rngwidgetBorder').val()}px`,
+                'border-style': 'solid',
+                'border-color': adjustColor($('#DB_widgetBorderColor').val(),$('#DB_rngwidgetBorderOpacity').val()),
+                'position': 'absolute',
+            });
+            widgetHover($(widget));
+            widgetEvent($(widget));
+
+            
+            //設定圖表類型
+            $(widget).find(`.sltChartType`).val(type);
+    
+
+            /*console.log(widget)
+            console.log($(widget))*/
+            draw(id, type, data);
+            widgetIndex++;
+        };
+
+        //widget浮動
+        function widgetHover(widget){
+            let id = widget.attr("gs-id");
+            widget.append($('<div>',{'style':"z-index: 5"})
+                //浮動元素
+                .append(
+                    `<div class="DB_hoverID" style="position: absolute; opacity: 0.5;display: none; top:50%; left:50%; transform: translate(-50%, -50%); font-size:120px; user-select:none;">${id}</div>
+                    <div class="DB_hover" style="position: absolute; opacity: 0.8;display: none;width: 100%;padding: 10px;">
+                        <button class="btn-close float-end" type="button" id="DB_closeBtn"></button>  
+                        <button class="btn btn-outline-primary btn-sm" type="button" id="lockBtn">lock</button>    
+                        <select class="boxShort sltChartType">
+                            <option value="bar" selected>Bar</option>
+                            <option value="line">Line</option>
+                            <option value="doughnut">Doughnut</option>
+                            <option value="pie">Pie</option>
+                            <option value="mix">MixChart</option>
+                            <option value="radar">Radar</option>
+                            <option value="table">Table</option>
+                            <option value="progress">Progress</option>
+                            <option value="key">Key/Value</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" id="setBtn" data-bs-toggle="offcanvas" data-bs-target="#DB_setWindows"><i class="fas fa-wrench"></i></button>
+                        <button class="btn btn-primary btn-sm" id="refreshDataBtn"><i class="fas fa-undo"></i></button>
+                        <button class="btn btn-primary btn-sm" id="copyWidgetBtn"><i class="fas fa-copy"></i></button>
+                    </div>`
+                )
+            
+            );
+            //懸浮顯示
+            widget.hover(
+                function() {
+                    $(this).find('.DB_hover').css('pointer-events', 'auto').show();
+                    $(this).find('.DB_hoverID').css('pointer-events', 'none').show();
+                    
+                },
+                function() {
+                    $(this).find('.DB_hover').hide();
+                    $(this).find('.DB_hoverID').hide();
+                }
+            );
+        };
+
+        //bodyheight
+        function bodyHeight(widget){
+            let id = $(widget).attr('gs-id')
+            let height = $(widget).find(".DB_header").height();
+            if($("#chkWidgetEvent").prop('checked') == false){
+                height = height - $(widget).find(".DB_header").height();
+            };
+            if($(widget).find(`.DB_textArea`).height()){
+                height = height + $(widget).find(`.DB_textArea`).height();
+            };
+            return height;
+
+        };
+
+        //hover事件
+        function widgetEvent(widget){
+            //回報各數值
+            let id = parseInt(widget.attr('gs-id'));
+            let type = widget.find(`.DB_body`).attr("wg-type");
+            let data = dataAll[id];
+            widget.find('#setBtn').on("click", function() {
+                if(widget.attr("gs-x")> 8){
+                    $("#DB_setWindows").addClass("offcanvas-start").removeClass("offcanvas-end")
+                }
+                else{
+                    $("#DB_setWindows").addClass("offcanvas-end").removeClass("offcanvas-start")
+                };
+                resetALLSet();
+                setSetWindows(type);
+                returnSetting(widget, type);
+            });
+            //關閉按鈕
+            widget.find('#DB_closeBtn').on('click', function () {
+                grid.removeWidget(widget[0]);
+                delete dataAll[id];
+            });
+
+
+            //鎖定按鈕
+            let isLocked = false;
+            widget.find("#lockBtn").on('click', function () {
+                isLocked = !isLocked;
+                if (isLocked) {
+                    widget.find("#lockBtn").addClass('active');
+                    widget.attr({
+                        'gs-no-move': 'true',
+                        'gs-no-resize': 'true',
+                        'gs-locked': 'true'
+                    });
+                    grid.movable(widget[0], false);  //禁止網格移動
+                    grid.resizable(widget[0], false);  //禁止網格變化
+                    grid.update(widget[0], { locked: true });  //禁止被移動
+                } else {
+                    widget.find("#lockBtn").removeClass('active');
+                    widget.removeAttr('gs-no-move').removeAttr('gs-no-resize').removeAttr('gs-locked');
+                    grid.movable(widget[0], true);
+                    grid.resizable(widget[0], true);
+                    grid.update(widget[0], { locked: false });
+                }
+            });
+
+            //設定圖表類型
+            widget.find(`.sltChartType`).on('change', function() {
+                returnSetting(widget, type);
+                type = $(this).val();
+                if(id != $("#DB_setIDShow").text()){
+                    resetALLSet();
+                };
+                setSetWindows(type);
+                draw(id, type, data);
+            });
+
+            //刷新數據
+            widget.find("#refreshDataBtn").on('click', function() {
+                returnSetting(widget, type);
+                draw(id, type, data);
+            });
+
+            //複製按鈕
+            widget.find("#copyWidgetBtn").on("click", function() {
+                returnSetting(widget, type);
+                let w = $(widget).attr("gs-w");
+                let h = $(widget).attr("gs-h");
+                addWidget(w, h, undefined, undefined,type);
+            });
+
+            //輸入資料
+            $("#DB_txtWidgetData").on('keydown',function(event){
+                if( event.key === "Enter" ){
+                    if(parseInt($("#DB_setIDShow").text()) == id){
+                        if($(this).val() == ''){
+                            data = null;
+                        }else if(type == "custom"){
+                            data = $(this).val();
+                        }
+                        else{
+                            data = JSON.parse($(this).val());
+                        }
+                        draw(id, type ,data);
+                        console.log(data);
+                        $("#DB_txtWidgetData").val("");
+                    };
+                };
+                
+            });
+        };
+
+        //重製設定
+        function resetALLSet(){
+            $('.offcanvas-body select').each(function() {
+                let defaultValue = $(this).find('option[selected]').val();
+                $(this).val(defaultValue);
+            });
+            $('.offcanvas-body .form-check-input').each(function() {
+                $(this).prop("checked",false);
+            });
+            $('.offcanvas-body [type=text]').each(function() {
+                $(this).val('');
+            });
+            //border
+            $("#DB_rngwidgetBorder").val(1);
+            $('#DB_widgetBorderShow').text($("#DB_rngwidgetBorder").val());
+            $("#DB_widgetBorderColor").val("#000000");
+            $("#DB_rngwidgetBorderOpacity").val(1);
+            $('#DB_widgetBorderOpacityShow').text($("#DB_rngwidgetBorderOpacity").val());
+            //widget
+            $("#DB_rngwidgetOpacity").val(0.8);
+            $('#DB_widgetOpacityShow').text($('#DB_rngwidgetOpacity').val());
+            //padding
+            $("#DB_rngwidgetPadding").val(5);
+            $('#DB_widgetPaddingShow').text($('#DB_rngwidgetPadding').val());
+            //margin
+            $("#DB_rngwidgetMargin").val(0);
+            $('#DB_widgetMarginShow').text($('#DB_rngwidgetMargin').val());
+            //header
+            $("#rngwidgetHeaderOpacity").val(0.5);
+            $('#widgetHeaderOpacityShow').text($('#rngwidgetHeaderOpacity').val());
+            $("#rngHeaderFontColor").val("#000000");
+            $("#rngHeaderFontSize").val(15);
+            $("#rngHeaderFontSizeShow").text($("#rngHeaderFontSize").val());
+            //datalabels
+            $("#chkSpecialDataShow").prop("checked",true);
+            $("#rngDataFontSize").val(15);
+            $("#DataFontSizeShow").text($("#rngDataFontSize").val());
+            $("#DB_datalabelsColor").val("#000000");
+            //txtarea
+            $("#rngNewFontSize").val(15);
+            $("#newFontSizeShow").text($("#rngNewFontSize").val());
+            $("#newFontSizeColor").val("#000000");
+            //progress
+            $("#centerTxtColor").val("#000000");
+        };
+
+        
+        function returnWidgetSetting(widget){
+            let content = widget.find('.grid-stack-item-content');
+            let header = widget.find('.DB_header');
+            //邊框
+            $("#DB_rngwidgetBorder").val(parseInt(content.css('border-width')));
+            $('#DB_widgetBorderShow').text($("#DB_rngwidgetBorder").val());
+            $("#DB_widgetBorderColor").val(rgbToHex(content.css('border-color')));
+            $("#DB_rngwidgetBorderOpacity").val(rgbAlpha(content.css('border-color')));
+            $('#DB_widgetBorderOpacityShow').text($("#DB_rngwidgetBorderOpacity").val());
+            //widget背景
+            $('#DB_rngwidgetOpacity').val(rgbAlpha(content.css('background-color')));
+            $('#DB_widgetOpacityShow').text($('#DB_rngwidgetOpacity').val());
+            //padding
+            $('#DB_rngwidgetPadding').val(parseInt(content.css('padding')));
+            $('#DB_widgetPaddingShow').text($('#DB_rngwidgetPadding').val());
+            //margin
+            $('#DB_rngwidgetMargin').val(parseInt(content.css('margin')));
+            $('#DB_widgetMarginShow').text($('#DB_rngwidgetMargin').val());
+
+            //header
+            if(header.css('display') == 'none'){
+                $("#chkWidgetEvent").prop('checked',false);
+            }
+            else{
+                $("#chkWidgetEvent").prop('checked',true);
+            }
+            $("#widgetHeaderColor").val(rgbToHex(header.css('background-color')));
+            $('#rngwidgetHeaderOpacity').val(rgbAlpha(header.css('background-color')));
+            $('#widgetHeaderOpacityShow').text($('#rngwidgetHeaderOpacity').val());
+            $("#rngHeaderFontColor").val(rgbToHex(widget.find('h6').css('color')));
+            $("#rngHeaderFontSize").val(parseInt(widget.find('h6').css('font-size')));
+            $("#rngHeaderFontSizeShow").text($("#rngHeaderFontSize").val());
+            //文字區塊
+            if(widget.find(`.DB_textArea`).attr("location")){
+                $("#newArea").val(widget.find(`.DB_textArea`).attr("location"));
+                $("#rngNewFontSize").val(parseInt(widget.find(`.DB_textArea`).css('font-size')));
+                $("#newFontSizeShow").text($("#rngNewFontSize").val());
+                $("#newFontSizeColor").val(rgbToHex(widget.find(`.DB_textArea`).css('color')));
+            };
+        };
+        function returnChartSet(chart, type){
+            //圖表(chartset)
+            let plugins = chart.config.options.plugins;
+            $("#sltLegend").val(plugins.legend.position);
+            $("#chkLegendShow").prop("checked",plugins.legend.display);
+            
+            $("#rngDataFontSize").val(plugins.datalabels.font.size);
+            $("#DataFontSizeShow").text($("#rngDataFontSize").val());
+            $("#DB_datalabelsColor").val(plugins.datalabels.color);
+            $("#chkSpecialDataShow").prop("checked",(plugins.datalabels.fontFix.dataShow));
+            $("#chkpercentageData").prop("checked",plugins.datalabels.fontFix.percentageShow);
+            $("#txtafterNum").val(plugins.datalabels.fontFix.decimalPlaces);
+            if($("#chkSpecialDataShow").prop("checked")){
+                $("#txtPrefix").val(plugins.datalabels.fontFix.prefix);
+                $("#txtSuffix").val(plugins.datalabels.fontFix.suffix);
+            }
+            else{
+                $("#txtPrefix").val('');
+                $("#txtSuffix").val('');
+            };
+                
+        };
+        function returnAnyChartSet(chart, type){
+            let options = chart.config.options;
+            let data = chart.config.data;
+            switch(type){
+                    case "bar":
+                        //tick
+                        $("#chkXTitle").prop('checked',options.scales.x.title.display);
+                        $("#chkYTitle").prop('checked',options.scales.y.title.display);
+                        //
+                        $("#chkStack").prop('checked',options.scales.x.stacked);
+                        $("#sltStart").val(options.indexAxis);
+                        break;
+                    case "line":
+                        //tick
+                        $("#chkXTitle").prop('checked',options.scales.x.title.display);
+                        $("#chkYTitle").prop('checked',options.scales.y.title.display);
+                        //
+                        $("#chkFill").prop('checked',data.datasets[0].fill?true:false);                       
+                        break;
+                    case "doughnut":
+                        //circle
+                        $("#sltAngle").val(data.datasets[0].circumference?"180":"360");
+
+                        break;
+                    case "pie":
+                        //circle
+                        $("#sltAngle").val(data.datasets[0].circumference?"180":"360");
+
+                        break;
+                    case 'mix':
+                        $("#chkXTitle").prop('checked',options.scales.x.title.display);
+                        $("#chkYTitle").prop('checked',options.scales.y.title.display);
+                        break;
+                    case "radar":
+                        if(data.datasets[0].fill == false){
+                            $("#chkRadarFill").prop('checked',true);
+                        }
+                        else{
+                            $("#chkRadarFill").prop('checked',false);
+                        }
+                        break;
+                }
+        }
+        function returnOthersSet(widget, chart, type){
+            switch(type){
+                case "table":
+
+                    break;
+                case "progress":
+                    if(chart){
+                        if(chart.config.data.datasets[0].circumference == 180){
+                            $("#sltShape").val("halfCircle");
+                        }
+                        else if (chart.config.data.datasets[0].circumference == 360){
+                            $("#sltShape").val("fullCircle")
+                        };
+                        $("#centerTxtColor").val(chart.config.options.centerTxtColor);
+                    };
+                    break;
+                case "key":
+                    $("#txtGrid").val(widget.find('[keyGrid]').attr('keyGrid'));
+                    break;
+            };
+        };
+
+        function returnSetting(widget, type){
+            let id = widget.attr("gs-id");
+            let chart = Chart.getChart(widget.find("#DB_chart"+id));
+            $("#DB_setIDShow").text(id);
+            resetALLSet();
+            returnWidgetSetting(widget);
+            if(chart){
+                if(["bar", "line", "doughnut", "pie", "mix", "radar"].includes(type)){
+                    returnChartSet(chart, type);
+                };
+                returnAnyChartSet(chart, type);
+            };
+            returnOthersSet(widget, chart, type);
+        };
+
+         //獲取RGB
+        function rgbToHex(colorString) {
+            // 使用正則表達式匹配 RGB 和 RGBA 字符串
+            let rgbaResult = /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(0|0?\.\d+|1)\s*\)$/.exec(colorString);
+            let rgbResult = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/.exec(colorString);
+
+            let r, g, b;
+
+            if (rgbaResult) {
+                // 提取 RGBA 值中的紅色、綠色和藍色值
+                r = parseInt(rgbaResult[1], 10);
+                g = parseInt(rgbaResult[2], 10);
+                b = parseInt(rgbaResult[3], 10);
+            } else if (rgbResult) {
+                // 提取 RGB 值
+                r = parseInt(rgbResult[1], 10);
+                g = parseInt(rgbResult[2], 10);
+                b = parseInt(rgbResult[3], 10);
+            } else {
+                throw new Error("Invalid RGB or RGBA string format");
+            };
+
+            // 確保每個顏色值在 0 到 255 之間
+            let clamp = (value) => Math.max(0, Math.min(255, value));
+
+            // 將每個顏色值轉換為兩位十六進制字符串
+            let red = clamp(r).toString(16).padStart(2, '0');
+            let green = clamp(g).toString(16).padStart(2, '0');
+            let blue = clamp(b).toString(16).padStart(2, '0');
+
+            // 返回 HEX 顏色字符串
+            return `#${red}${green}${blue}`;
+        };
+        //獲取RGBA
+        function rgbAlpha(colorString) {
+            // 使用正則表達式匹配 RGB 和 RGBA 字符串
+            let rgbaResult = /^rgba\(\d{1,3},\s*\d{1,3},\s*\d{1,3},\s*(0|0?\.\d+|1)\)$/.exec(colorString);
+            let rgbResult = /^rgb\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\)$/.exec(colorString);
+
+            if (rgbaResult) {
+                // 返回 RGBA 字符串中的 alpha 值
+                return parseFloat(rgbaResult[1]);
+            } else if (rgbResult) {
+                // RGB 字符串默認 alpha 值為 1
+                return 1;
+            } else {
+                throw new Error("Invalid RGB or RGBA string format");
+            }
+        };
+
+
+        //批量更改widget
+        $(".selectpicker").on("show.bs.select",function(e) {
+            let select = $(this);
+            loadSelectOptions(select);
+        });
+
+        function loadSelectOptions(select){
+            let gsIDs= Array.from($('[gs-id]').map(function() {
+                    return $(this).attr('gs-id');
+                }));
+            gsIDs.sort(function(a, b) {
+                return parseInt(a) - parseInt(b);
+            });
+            
+            select.empty();
+            
+
+            $.each(gsIDs, function(i, id) {
+                select.append($('<option>', {
+                    value: id,
+                    text: id
+                }));
+            });
+            // Refresh the Bootstrap Select
+            select.selectpicker('refresh');
+        };
+
+        //批量更改widget setCtn
+        $("#setWidgetBtn").on("click",function(){
+            $("#DB_set >div.type").css({
+                'display':'none',
+            });
+            $("#DB_txtSet").css('display','none');
+            $("#DB_headerSet").css('display','none');
+            $("#DB_titleDataSet").css('display','none');
+            $("#DB_setIDShow").text($(".selectpicker").val());
+            $("#DB_setWindows").addClass("offcanvas-end").removeClass("offcanvas-start");
+            resetALLSet();
+        });
+        
+
+        //預覽
+        $("#perviewBtn").on("click",function() {
+            saveGrid();
+            let val = $("#DB_saveLayout").text();
+            $("#DB_downloadLink").remove();
+            $("#DB_saveLayout").text("");
+            localStorage.setItem("preview", val);
+            window.open('DashboardPreview_github.html', '_blank');
+        });
+
+        //響應
+        $("#chkRWDGrid").on("change",function() {
+            if($(this).prop("checked")){
+                grid.destroy(false); // false 參數表示不要移除 DOM 元素
+                grid = GridStack.init({
+                    float: true,
+                    margin: 0,
+                    columnOpts: {
+                        breakpoints: [{w:768, c:1}, {w:1200, c:12}]
+                    }
+                });
+            }
+            else{
+                grid.destroy(false); // false 參數表示不要移除 DOM 元素
+                grid = GridStack.init({
+                    float: true,
+                    margin: 0,
+                });
+            };
+        });
+ 
+
+        //重製所有設定
+        $("#DB_closeSet").on("click", function() {
+            resetALLSet();
+        });
+
+        //設定colorType
+        $("#sltColorType").on('change', function() {
+            color = colorBox[parseInt($(this).val())];
+            for(let i = 1;i < widgetIndex;i++){
+                if($(`[gs-id=${i}]`).length != 0){
+                    let id = i;
+                    let type = $(`[gs-id=${i}]`).find(`.DB_body`).attr("wg-type");
+                    let data = dataAll[i];
+                    returnSetting($(`[gs-id=${i}]`), type);
+                    draw(id, type, data);
+                };
+            };
+        });
+    
+        //Grid背景
+        $("#DB_GridColor").on("input",function() {
+            $(".grid-stack").css({
+                'background-color': adjustColor($(this).val(),1)
+            });
+        });
+
+
+        //邊框
+        $('#DB_rngwidgetBorder').on("input",function() {
+            $('#DB_widgetBorderShow').text($(this).val())
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'border-width': `${$(this).val()}px`
+                });
+            };
+            
+        });
+        $('#DB_widgetBorderColor').on("input",function() {
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'border-color': adjustColor($(this).val(),$('#DB_rngwidgetBorderOpacity').val())
+                });
+            };
+        });
+        $("#DB_rngwidgetBorderOpacity").on("input",function() {
+            $('#DB_widgetBorderOpacityShow').text($(this).val());
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'border-color': adjustColor($('#DB_widgetBorderColor').val(),$(this).val())
+                });
+            };
+        });
+        //widget背景
+        $('#DB_rngwidgetOpacity').on("input",function() {
+            $('#DB_widgetOpacityShow').text($(this).val());
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'background-color': adjustColor($('#DB_widgetBGColor').val(),$(this).val())
+                });
+            };
+        });
+        $("#DB_widgetBGColor").on("input",function() {
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'background-color': adjustColor($(this).val(),$('#DB_rngwidgetOpacity').val())
+                });
+            };
+        });
+        //padding
+        $('#DB_rngwidgetPadding').on("input",function() {
+            $('#DB_widgetPaddingShow').text($(this).val());
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'padding': `${$(this).val()}px`,
+                });
+            };
+        });
+        //margin
+        $('#DB_rngwidgetMargin').on("input",function() {
+            $('#DB_widgetMarginShow').text($(this).val());
+            let id = $("#DB_setIDShow").text().split(',').map(num => parseInt(num));
+            for(let i = 0; i<id.length ;i++){
+                $(`[gs-id=${id[i]}]`).find('.grid-stack-item-content').css({
+                    'margin': `${$(this).val()}px`,
+                });
+            };
+        });
+
+        //header
+        $('#chkWidgetEvent').on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let type = $(`[gs-id=${id}]`).find(`.sltChartType`).val();
+            let data = dataAll[id];
+            if($("#chkWidgetEvent").prop('checked')){
+                $(`[gs-id=${id}]`).find('.DB_header').css({
+                    'display': 'block',
+                });
+            }
+            else{
+                $(`[gs-id=${id}]`).find('.DB_header').css({
+                    'display': 'none',
+                })
+            };
+            $(`[gs-id=${id}]`).find(`.DB_body`).css({
+                'height': `calc(100% - ${bodyHeight(`[gs-id=${id}]`)}px)`,
+            });
+            draw(id, type, data);
+            
+        });
+        $('#widgetHeaderColor').on("input",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            $(`[gs-id=${id}]`).find('.DB_header').css({
+                'background-color': adjustColor($(this).val(), $('#rngwidgetHeaderOpacity').val())
+            });
+        });
+        $('#rngwidgetHeaderOpacity').on("input",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            $('#widgetHeaderOpacityShow').text($(this).val());
+            $(`[gs-id=${id}]`).find('.DB_header').css({
+                'background-color': adjustColor($('#widgetHeaderColor').val(), $(this).val())
+            });
+        });
+        $("#DB_txtTitle").on('keydown',function(event){
+            let id = parseInt($("#DB_setIDShow").text());
+            if( event.key === "Enter" ){
+                $(`[gs-id=${id}]`).find('h6').text($(this).val())
+            };
+        });
+        $("#rngHeaderFontSize").on("input",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let type = $(`[gs-id=${id}]`).find(`.sltChartType`).val();
+            let data = dataAll[id];
+            $("#rngHeaderFontSizeShow").text($(this).val());
+            $(`[gs-id=${id}]`).find('h6').css({
+                'font-size': `${$(this).val()}px`,
+            });
+            $(`[gs-id=${id}]`).find(`.DB_body`).css({
+                'height': `calc(100% - ${bodyHeight(`[gs-id=${id}]`)}px)`,
+            });
+            draw(id, type, data);
+
+        });
+        $("#rngHeaderFontColor").on("input",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            $(`[gs-id=${id}]`).find('h6').css({
+                'color': $(this).val(),
+            });
+        });
+
+        //新增文字
+        $(`#newText`).on("keydown",function(event) { 
+            if(event.key === "Enter"){
+                let id = parseInt($("#DB_setIDShow").text());
+                let type = $(`[gs-id=${id}]`).find(`.DB_body`).attr("wg-type");
+                let data = dataAll[id];
+
+                $(`[gs-id=${id}]`).find(`.DB_textArea`).empty().append(delScript($(this).val()));
+
+                $(`[gs-id=${id}]`).find(`.DB_body`).css({
+                    'height': `calc(100% - ${bodyHeight(`[gs-id=${id}]`)}px)`,
+                });
+                draw(id, type, data);
+            };
+        });
+        $(`#newArea`).on('change', function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let text = $(`[gs-id=${id}]`).find(`.DB_textArea`);
+            $(`[gs-id=${id}]`).find(`.DB_textArea`).remove();
+            if($(this).val() == "top"){
+                $(`[gs-id=${id}]`).find(`.DB_body`).before(text);
+            }
+            else{
+                $(`[gs-id=${id}]`).find(`.DB_body`).after(text);
+                $(`[gs-id=${id}]`).find(`.DB_textArea`).attr("location","bottom");
+            };
+        });
+        $("#rngNewFontSize").on('input',function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let type = $(`[gs-id=${id}]`).find(`.DB_body`).attr("wg-type");
+            let data = dataAll[id];
+            $("#newFontSizeShow").text($(this).val());
+            $(`[gs-id=${id}]`).find(`.DB_textArea`).css({
+                'font-size': `${$(this).val()}px`,
+            });
+            $(`[gs-id=${id}]`).find(`.DB_body`).css({
+                'height': `calc(100% - ${bodyHeight(`[gs-id=${id}]`)}px)`,
+            });
+            draw(id, type, data);
+        });
+        $("#newFontSizeColor").on('input',function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            $(`[gs-id=${id}]`).find(`.DB_textArea`).css({
+                'color': $(this).val(),
+            });
+        });
+
+
+
+
+        //options
+        //datalabels
+        $("#rngDataFontSize").on("input",function() {
+            $("#DataFontSizeShow").text($("#rngDataFontSize").val());
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.plugins.datalabels.font.size = $(this).val();
+            chart.update();
+        })
+        $("#chkSpecialDataShow").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.plugins.datalabels.fontFix.dataShow = $(this).prop("checked");
+            getIDAndDraw();
+        });
+        $("#DB_datalabelsColor").on('input',function(){
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.plugins.datalabels.color = $(this).val();
+            chart.update();
+        });
+        $("#txtafterNum").on('input',function(){
+            getIDAndDraw();
+        });
+        
+        $("#chkpercentageData").on('change',function() {
+            getIDAndDraw();
+        });
+        //legend
+        $("#chkLegendShow").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.plugins.legend.display = $(this).prop("checked");
+            chart.update();
+        });
+        $("#sltLegend").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.plugins.legend.position = $(this).val();
+            chart.update();
+        });
+        //tick
+        $("#chkXTitle").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.scales.x.title.display = $(this).prop("checked");
+            chart.update();
+        });
+        $("#chkYTitle").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.scales.y.title.display = $(this).prop("checked");
+            chart.update();
+        });
+        $("#txtXLabel").on("keydown", function(event) {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            if (event.key === "Enter") {
+                chart.config.options.scales.x.title.text = $(this).val();
+                $(this).val("");
+                chart.update();
+            };
+        });
+        $("#txtYLabel").on("keydown", function(event) {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            if (event.key === "Enter") {
+                chart.config.options.scales.y.title.text = $(this).val();
+                $(this).val("");
+                chart.update();
+            };
+        });
+        //bar
+        $("#chkStack").on("change",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.scales.x.stacked = $(this).prop("checked");
+            chart.config.options.scales.y.stacked = $(this).prop("checked");
+            chart.update();
+        });
+        $("#sltStart").on("change",function() {
+            getIDAndDraw();
+        });
+        //line
+        $("#chkFill").on("change",function() {
+            getIDAndDraw();
+        });
+        //doughnut/pie
+        $("#sltAngle").on("change",function() {
+            getIDAndDraw();
+        });
+        //progress
+        $("#sltShape").on("change",function() {
+            getIDAndDraw();
+        });
+        $("#centerTxtColor").on("input",function() {
+            let id = parseInt($("#DB_setIDShow").text());
+            let chart = Chart.getChart("DB_chart"+id);
+            chart.config.options.centerTxtColor = $(this).val();
+            chart.update();
+        });
+        //key
+        $("#txtGrid").on("input",function() {
+            getIDAndDraw();
+        });
+       
+        //radar
+        $("#chkRadarFill").on("change",function() {
+            getIDAndDraw();
+        });
+
+
+        function getIDAndDraw(){
+            let id = parseInt($("#DB_setIDShow").text());
+            let type = $(`[gs-id=${id}]`).find(`.sltChartType`).val();
+            let data = dataAll[id];
+            draw(id, type, data);
+        };
+    
+        //按鈕
+        //清除按鈕函式
+        function clearall() {
+            grid.removeAll();
+            widgetIndex = 1;
+            $("#DB_fileJson").val('');
+            dataAll = {};
+        };
+
+        //儲存按鈕函式
+        function saveGrid() {
+            if($("#DB_downloadLink")){
+                $("#DB_downloadLink").remove();
+            };
+            let saveData = {
+                version: version,
+                widget: grid.save(true, true),
+                widgetSet: {},
+                config: {},
+                colorType: $("#sltColorType").val(),
+                GridStackSet: $(".grid-stack").css('background-color'),
+            };
+
+            for (let i=1; i < widgetIndex; i++){
+                let chart = Chart.getChart("DB_chart"+i);
+                if(chart){
+                    saveData.config[i] = JSON.stringify(chart.config._config)  
+                };
+            };
+            for (let i=1; i < widgetIndex; i++){
+                if($(`[gs-id=${i}]`).find(".grid-stack-item-content").attr("style")){
+                    let styleString = $(`[gs-id=${i}]`).find(".grid-stack-item-content").attr("style");
+                    let styleObject = {};
+                    let styleArray = styleString.split(';');
+                    styleArray.forEach(style => {
+                        if (style.trim()) {
+                            let [key, value] = style.split(':');
+                            if (key && value) {
+                                // 将 CSS 属性名称转换为 camelCase
+                                key = key.trim().replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+                                styleObject[key] = value.trim();
+                            };
+                        };
+                    });
+                    saveData.widgetSet[i] = styleObject;
+                };
+                
+            };
+
+
+            let layoutString = JSON.stringify(saveData, null, 2);
+
+            //寫到save list裡
+            let saveList = $("#DB_saveLayout");
+            saveList.empty(); // 清空內容
+            saveList.append($("<pre>").text(layoutString));
+
+            //製作下載連結
+            let downloadLink = $("#DB_downloadLink");
+            if (downloadLink.length === 0) {
+                downloadLink = $("<a>", {
+                    id: "DB_downloadLink",
+                    class: "ms-2",
+                    text: "下載布局"
+                });
+                $("#DB_controlArea").append(downloadLink);
+            };
+
+            downloadLink.attr({
+                href: 'data:text/json;charset=utf-8,' + encodeURIComponent(layoutString),
+                download: 'grid-layout.json'
+            });
+        };
+
+        //load
+        $("#DB_fileJson").on('change', function(event) {
+            let file = event.target.files[0];
+            dataAll= {};
+            if(file){
+                $("#DB_saveLayout").empty();
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let data = JSON.parse(e.target.result);
+                        let loadVersion = data.version;
+                        let loadVersionMiddle = loadVersion.split('.')[1];
+                        let versionMiddle = version.split('.')[1];
+                        if(loadVersionMiddle == versionMiddle){
+                            loadGrid(data);
+                        }
+                        else{
+                            alert("檔案版本為" + loadVersion + "目前版本為" + version)
+                            loadGrid(data).then( () => {
+                                let widgetStyle = data.widgetSet;
+                                let widgetSet={};
+                                let idList = [];
+                                for(let i = 0;i < $("#DB_grid").find("[gs-id]").length;i++){
+                                    idList[i] = $("#DB_grid").find("[gs-id]")[i].gridstackNode.id
+                                };
+                                for(let i=0; i < idList.length; i++){
+                                    let { id, content, ...rest } = data.widget.children[i];
+                                    widgetSet[i] = {
+                                        ...rest,
+                                        type: $(`[gs-id=${idList[i]}]`).find(".DB_body").attr("wg-type"),
+                                    };
+                                };
+                                let BGC = $("#DB_grid").find(".grid-stack").css("background-color");
+                                let oriWidget =[];
+                                for(let i=0; i < $("#DB_grid").find("[gs-id]").length; i++){
+                                    oriWidget[i] = $(`[gs-id=${idList[i]}]`).find(".grid-stack-item-content");
+                                };
+                                $("#DB_grid").after(`<div id="temp"><div>`);
+                                for(let i=0; i < oriWidget.length; i++){
+                                    $("#temp").append(`<div gs-id=${idList[i]}></div>`);
+                                    $("#temp").find(`[gs-id=${idList[i]}]`).append(oriWidget[i]);
+                                };
+                                grid.destroy(true)
+                                $("#DB_grid").append(`<div class="grid-stack" style="background-color: ${BGC};"></div>`);
+                                grid = GridStack.init({
+                                    float: true,
+                                    margin: 0,
+                                    columnOpts: {
+                                        breakpoints: [{w:768, c:1},{w:1200, c:12}],
+                                    },
+                                });
+                                widgetIndex = 1;
+                                for(let i=0; i < Object.keys(widgetSet).length; i++){
+                                    returnSetting($("#temp").find(`[gs-id=${idList[i]}]`),widgetSet[i].type);
+                                    addWidget(widgetSet[i].w, widgetSet[i].h,widgetSet[i].x, widgetSet[i].y, widgetSet[i].type);
+                                    resetALLSet();
+                                }
+                                $("#temp").remove();
+                            })
+                            
+                        }
+                        
+
+                    } catch (error) {
+                        console.error("Error parsing JSON: ", error);
+                    };
+                };
+                reader.readAsText(file);
+            }
+            else{
+                console.log("NO File");
+            }
+        });
+
+
+        function loadGrid(data){
+            return new Promise((resolve, reject) => {
+                let widget = data.widget;
+                let widgetSet = data.widgetSet;
+                $("#sltColorType").val(data.colorType)
+                color = colorBox[data.colorType];
+                let configs = data.config;
+
+                grid.destroy(true);
+                $("#DB_grid").append(`<div class="grid-stack" style="background-color: ${data.GridStackSet};"></div>`);
+                grid = GridStack.addGrid($(".grid-stack")[0],widget);
+                $(document).ready(function (){
+                    let maxId = 0;
+
+                    $('[gs-id]').each(function () {
+                        let currentId = parseInt($(this).attr('gs-id'), 10);
+                        if (currentId > maxId) {
+                            maxId = currentId;
+                        };
+                    });
+                    widgetIndex = maxId+1;
+
+                    
+
+                    for(let i=1; i < widgetIndex+1; i++){
+                        if(widgetSet[i]){
+                            $(`[gs-id=${i}]`).find(".grid-stack-item-content").css(widgetSet[i]);
+                            widgetHover($(`[gs-id=${i}]`));
+                            widgetEvent($(`[gs-id=${i}]`));
+                            let type = $(`[gs-id=${i}]`).find(`.DB_body`).attr("wg-type");
+                            $(`[gs-id=${i}]`).find(`.sltChartType`).val(type);
+                            
+                        };
+                        
+                    };
+
+                    for(let i=1; i < widgetIndex+1; i++){   
+                        if(configs[i]){
+                            let config = JSON.parse(configs[i]);
+                            if($("#DB_chart" + i)){
+                                if(config.options.plugins.datalabels.fontFix){
+                                    config.options.plugins.datalabels.formatter = createFormatter(config.options.plugins.datalabels.fontFix);
+                                };
+                                new Chart($("#DB_chart" + i), config);
+                            };
+                            
+                        };
+                    };
+                    resolve();
+                });
+            })
+        }
+
+
+        //繪圖 
+        //添加隨機資料
+        function addRandomData(type){
+            let data;
+            switch (type) {
+                case "bar":
+                    data = generateRandomData(getRandomNumber(), getRandomNumber());
+                    break;
+                case "line":
+                    data = generateRandomData(getRandomNumber() + 1, getRandomNumber());
+                    break;
+                case "pie":
+                    data = generateRandomData(getRandomNumber() + 1, 1);
+                    break;
+                case "doughnut":
+                    data = generateRandomData(getRandomNumber() + 1, 1);
+                    break;
+                case "table":
+                    data = generateRandomData(6, 50);
+                    break
+                case "progress":
+                    data = 75;
+                    break;
+                case "key":
+                    data = generateRandomData(getRandomNumber() + 1, 1);
+                    let transformedData = $.map(data.labels, function(label, index) {
+                        return {
+                        Key: label,
+                        Value: data.datasets[0].data[index],
+                        Icon: '<i class="fas fa-globe"></i>'
+                        };
+                    });
+                    data = transformedData;
+                    break;
+                case "mix":
+                    data = generateRandomData(getRandomNumber() + 1, 2);
+                    break;
+                case "radar":
+                    data = generateRandomData(getRandomNumber() + 3, getRandomNumber());
+                    break;
+                
+            }
+            return data;
+        }
+
+        //繪圖
+        function draw(ID, type ,data){
+            $(`[gs-id=${ID}]`).find(".DB_body").empty().attr("wg-type",`${type}`);
+            //確認資料是否輸入
+            if (data) {
+                //檢查資料
+                if (detectData(type, data) == false) {
+                    $(`[gs-id=${ID}]`).find(".DB_body").append($('<div>',{'id':"DB_hint" + ID,'style':'position: absolute; top:50%; left:50%; transform: translate(-50%, -50%);font-size: 30px'}));
+                    $("#DB_hint"+ID).text("Data Type Error") ;
+                    console.log("Data Type Error");
+                    return;
+                }
+            }
+            else {
+                data = addRandomData(type);
+            }
+            if (["bar", "line", "doughnut", "pie", "radar"].includes(type)){
+                $(`[gs-id=${ID}]`).find(".DB_body").append($('<canvas>',{'id':"DB_chart"+ID}));
+                //畫圖主要
+                //調整各個參數
+                let chartDatasets = addBaseColor(type, data);
+                chartDatasets = getDatasets(type, chartDatasets);
+                let chartOptions = getOptions(type);
+                let config = {
+                    type: type,
+                    data: {
+                        labels: data.labels,
+                        datasets: chartDatasets,
+                    },
+                    options: chartOptions
+                };
+                if(config.options.plugins.datalabels.fontFix){
+                    config.options.plugins.datalabels.formatter = createFormatter(config.options.plugins.datalabels.fontFix);
+                };
+                new Chart($("#DB_chart" + ID), config);
+                //console.log(Data);
+            }
+            else {
+                switch (type) {
+                    case "table":
+                        //DashboardHelpers
+                        tableDraw(ID, data);
+                        break;
+
+                    case "progress":
+                        progressDraw(ID,data);
+                        break;
+
+                    case "key":
+                        let grid = $("#txtGrid").val();
+                        $(`[gs-id=${ID}]`).find(".DB_body").append($('<div>',{'id':"DB_hint" + ID}));
+                        $("#DB_hint"+ID).append(
+                            `<div class="container" keyGrid='${grid}' style="position: absolute; top:50%; left:50%; transform: translate(-50%, -50%);">
+                                <div style="display: grid; grid-template-columns: repeat(${grid}, auto); grid-auto-flow: row; gap: 1rem;" id="keyspace${ID}">
+                                </div>
+                            </div>`
+                        );
+                        //DashboardHelpers
+                        keyHTML(data, ID);
+                        break;
+                    case "custom":
+                        data = delScript(data)
+                        $(`[gs-id=${ID}]`).find(".DB_body").append(data);
+                        break;
+                    case "mix":
+                        $(`[gs-id=${ID}]`).find(".DB_body").append($('<canvas>',{'id':"DB_chart"+ID}));
+                        let chartDatasets = addBaseColor(type, data);
+                        let chartOptions = getOptions(type);
+                        let config = {
+                            data: {
+                                labels: data.labels,
+                                datasets: chartDatasets,
+                            },
+                            options: chartOptions
+                        };
+                        new Chart($("#DB_chart" + ID), config);
+                        break;
+                }
+            }
+            dataAll[ID] = data;
+        };
+
+        function progressDraw(ID,data){
+            switch($("#sltShape").val()){
+                case "bar":
+                    $(`[gs-id=${ID}]`).find(".DB_body").append($('<div>',{'id':"DB_hint" + ID,"style":'position: relative;top: 50%;'}));
+                    $("#DB_hint"+ID).append(
+                        `<div class="progress ms-3 me-3" role="progressbar">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: ${data}%; background-color: ${color[0]}">${data}%</div>
+                        </div>`
+                    );
+                    break;
+                case "halfCircle":
+                    $(`[gs-id=${ID}]`).find(".DB_body").append($('<canvas>',{'id':"DB_chart" + ID}));
+                    doughnutProgress(data, ID);
+                    break;
+                case "fullCircle":
+                    $(`[gs-id=${ID}]`).find(".DB_body").append($('<canvas>',{'id':"DB_chart" + ID}));
+                    circleProgress(data, ID);
+                    break;
+            };
+        };
+
+        //偵測資料
+        function detectData(type, data) {
+            if(typeof data === "number"){
+                if(type == "progress"){ return true }
+                else { return false; };
+            }
+            else if(type == "custom"){
+                if(typeof data === "string"){ return true }
+                else { return false; };
+            }
+            else if(type == "key"){
+                return detectKey(data);
+            }
+            else {
+                if(!detectLabels(data)){
+                    return false;
+                }
+                else{
+                    let rows = data.labels.length;
+                    let columns = data.datasets.length;
+                    switch (type) {
+                        case "bar":
+                            return true;
+                            break;
+                        case "line":
+                            return true;
+                            break;
+                        case "doughnut":
+                            return true;
+                            break;
+                        case "pie":
+                            return true;
+                            break;
+                        case "table":
+                            return true;
+                            break;
+                        case "mix":
+                            if(columns > 2){ return false }
+                            else{ return true };
+                            break;
+                    };
+                };
+            };
+        };
+        //檢查keyData
+        function detectKey(data){
+            if (!$.isArray(data)) {
+                return false;
+            }
+            // 驗證每個元素的格式
+            let isValid = data.every(function(item) {
+            return typeof item === 'object' &&
+                    'Key' in item &&
+                    'Value' in item &&
+                    'Icon' in item &&
+                    typeof item.Key === 'string' &&
+                    (typeof item.Value === 'string' || typeof item.Value === 'number') &&
+                    typeof item.Icon === 'string' &&
+                    /<i.*><\/i>/.test(item.Icon);
+            });
+            if (!isValid) {
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        //檢查labels和datasets是否符合
+        function detectLabels(data){
+            // 檢查是否為對象
+            if (typeof data !== 'object' || data === null) {
+                    return false;
+                }
+
+                // 檢查 labels 是否為陣列且每個元素都是字串
+                if (!Array.isArray(data.labels) || !data.labels.every(label => typeof label === 'string')) {
+                    return false;
+                }
+
+                // 檢查 datasets 是否為陣列且每個元素都符合要求
+                if (!Array.isArray(data.datasets)) {
+                    return false;
+                }
+
+                let isValid = data.datasets.every(function(dataset) {
+                    return typeof dataset === 'object' &&
+                        'label' in dataset &&
+                        'data' in dataset &&
+                        typeof dataset.label === 'string' &&
+                        Array.isArray(dataset.data) &&
+                        dataset.data.every(value => typeof value === 'number');
+                });
+                if (!isValid) {
+                    return false;
+                }
+                else{
+                    return true;
+                }
+        }
+
+        //增加顏色
+        function addBaseColor(type, data) {
+            let datasets = data.datasets;
+            let newDatasets = [];
+            let newBackgroundColors = [];
+            switch (type) {
+                case 'bar':
+                    for (let i = 0; i < datasets.length; i++) {
+                        let dataset = datasets[i];
+                        let baseColor = color[i % color.length];
+                        let newDataset = {
+                            ...dataset,
+                            backgroundColor: adjustColor(baseColor)
+                        };
+                        newDatasets.push(newDataset);
+                    }
+                    break;
+                case 'line':
+                    for (let i = 0; i < datasets.length; i++) {
+                        let dataset = datasets[i];
+                        let baseColor = color[i % color.length];
+                        let newDataset = {
+                            ...dataset,
+                            backgroundColor: adjustColor(baseColor),
+                            borderColor: adjustColor(baseColor),
+                        };
+                        newDatasets.push(newDataset);
+
+                    }
+                    break;
+                case "doughnut":
+                    for (let i = 0; i < datasets[0].data.length; i++) {
+                        let baseColor = color[i % color.length];
+                        newBackgroundColors.push(adjustColor(baseColor));
+                    };
+
+                    newDatasets = [{
+                        ...datasets[0],
+                        backgroundColor: newBackgroundColors
+                    }];
+                    break;
+                case "pie":
+                    for (let i = 0; i < datasets[0].data.length; i++) {
+                        let baseColor = color[i % color.length];
+                        newBackgroundColors.push(adjustColor(baseColor));
+                    };
+
+                    newDatasets = [{
+                        ...datasets[0],
+                        backgroundColor: newBackgroundColors
+                    }];
+                    break;
+                case 'mix':
+                    let barDataset = {
+                        ...datasets[0],
+                        type : "bar",
+                        backgroundColor: adjustColor(color[0]),
+                        borderColor: adjustColor(color[0]),
+                        order: 2,
+                    };
+                    newDatasets.push(barDataset);
+                    let lineDataset = {
+                        ...datasets[1],
+                        type : "line",
+                        backgroundColor: adjustColor(color[1]),
+                        borderColor: adjustColor(color[1]),
+                        order: 1,
+                    };
+                    newDatasets.push(lineDataset);
+
+                    break;
+                case 'radar':
+                    for (let i = 0; i < datasets.length; i++) {
+                        let dataset = datasets[i];
+                        let baseColor = color[i % color.length];
+                        let newDataset = {
+                            ...dataset,
+                            backgroundColor: adjustColor(baseColor,0.2),
+                            borderColor: adjustColor(baseColor),
+                        };
+                        newDatasets.push(newDataset);
+
+                    }
+                    break;
+            }
+            return newDatasets;
+        }
+
+        //設定options
+        function getOptions(type){
+            let options = {
+                chartType: type,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    datalabels: {
+                        display: ($("#chkSpecialDataShow").prop("checked") || $("#chkpercentageData").prop('checked'))?true:false,
+                        color: $("#DB_datalabelsColor").val(),
+                        font: {
+                            size: 15,
+                        },
+                        fontFix: {
+                            percentageShow : $("#chkpercentageData").prop('checked'),
+                            dataShow: $("#chkSpecialDataShow").prop('checked'),
+                            decimalPlaces: $("#txtafterNum").val(),
+                            prefix: $("#txtPrefix").val(),
+                            suffix: $("#txtSuffix").val(),
+                        }
+                        
+                    },
+                    legend: {
+                        display : $("#chkLegendShow").prop("checked"),
+                        position: $("#sltLegend").val(),
+                        /*labels:{
+                            boxWidth: 60,
+                            boxHeight: 20,
+                        }*/
+                    },
+                }
+                
+            };
+            if($("#rngDataFontSize").val()){
+                options.plugins.datalabels.font.size = parseInt($("#rngDataFontSize").val());
+            };
+            if($("#chkpercentageData").prop('checked')){
+                options.plugins.datalabels.formatter = createFormatter(options.plugins.datalabels.fontFix);
+            };
+            switch(type){
+                case "bar":
+                    $.extend(true, options, {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: $("#chkXTitle").prop("checked"),
+                                    text: 'X軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                },
+                                stacked: false,
+                            },
+                            y: {
+                                title: {
+                                    display: $("#chkYTitle").prop("checked"),
+                                    text: 'Y軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                },
+                                stacked: false,
+                            },
+                        },
+                        indexAxis: $("#sltStart").val(),
+                    });
+                    if($("#txtXLabel").val()){
+                        options.scales.x.title.text = $("#txtXLabel").val();
+                    }
+                    if($("#txtYLabel").val()){
+                        options.scales.y.title.text = $("#txtYLabel").val();
+                    }
+                    if($("#chkStack").prop("checked")){
+                        options.scales.x.stacked = true;
+                        options.scales.y.stacked = true;
+                    }
+                    break;
+                case "line":
+                    $.extend(true, options, {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: $("#chkXTitle").prop("checked"),
+                                    text: 'X軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: $("#chkYTitle").prop("checked"),
+                                    text: 'Y軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                },
+                            },
+                        },
+                    });
+                    if($("#txtXLabel").val()){
+                        options.scales.x.title.text = $("#txtXLabel").val();
+                    };
+                    if($("#txtYLabel").val()){
+                        options.scales.y.title.text = $("#txtYLabel").val();
+                    };
+                    if($("#chkSpecialDataShow").prop("checked")){
+                        options.plugins.datalabels.anchor = "end";
+                    };
+                    break;
+                case "doughnut":
+                    
+                    break;
+                case "pie":
+                    
+                    break;
+                case "mix":
+                    $.extend(true, options, {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: $("#chkXTitle").prop("checked"),
+                                    text: 'X軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                },
+                            },
+                            y: {
+                                title: {
+                                    display: $("#chkYTitle").prop("checked"),
+                                    text: 'Y軸單位',
+                                    font:{
+                                        size: 20,
+                                    },
+                                },
+                            },
+                        },
+                        indexAxis: $("#sltStart").val(),
+                    });
+                    if($("#txtXLabel").val()){
+                        options.scales.x.title.text = $("#txtXLabel").val();
+                    };
+                    if($("#txtYLabel").val()){
+                        options.scales.y.title.text = $("#txtYLabel").val();
+                    };
+                    break;
+                case "radar":
+                    $.extend(true, options, {
+                        scales: {
+                            r: {
+                                pointLabels: {
+                                    font: {
+                                        size: 15,
+                                    }
+                                },
+                            },
+                        },
+                    });
+                    break;
+            }
+            //console.log(options)
+            return options;
+        }
+
+        //設定datasets
+        function getDatasets(type, data){
+            let datasets = data;
+            switch(type){
+                case "bar":
+                    
+                    break;
+                case "line":
+                    if ($("#chkFill").prop("checked")){
+                        for(let i = 0; i < data.length; i++){
+                            let dataset = datasets[i];
+                            let backgroundColor = dataset.backgroundColor;
+                            let newBackgroundColor = backgroundColor.replace(/rgba\((\d+), (\d+), (\d+), ([^)]+)\)/, 'rgba($1, $2, $3, 0.2)');
+                            let newDataset = {
+                                ...dataset,
+                                backgroundColor: newBackgroundColor,
+                                fill: true
+                            };
+                            datasets[i] = newDataset;
+                        };
+                    };
+                    break;
+                case "doughnut":
+                    if ($("#sltAngle").val() == "180"){
+                        datasets[0].circumference = 180;
+                        datasets[0].rotation = -90;
+                    };
+                    break;
+                case "pie":
+                if ($("#sltAngle").val() == "180"){
+                        datasets[0].circumference = 180;
+                        datasets[0].rotation = -90;
+                    };
+                    break;
+                case "radar":
+                    if ($("#chkRadarFill").prop("checked")){
+                        for(let i = 0; i < data.length; i++){
+                            let dataset = datasets[i];
+                            let newDataset = {
+                                ...dataset,
+                                fill: false,
+                            };
+                            datasets[i] = newDataset;
+                        };
+                    };
+                    break;
+            };
+            return datasets;
+        }
+
+        //圓形進度條
+        function circleProgress(targetProgress, chartID) {
+            let ctx = $("#DB_chart" + chartID);
+
+            let chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [targetProgress, 100 - targetProgress],
+                        backgroundColor: [
+                            adjustColor(color[0]),
+                            'rgba(220, 220, 220, 0.5)'
+                        ],
+                        borderWidth: 0,
+                        circumference: 360,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    chartType:'progress',
+                    centerTxtColor: $("#centerTxtColor").val(),
+                    plugins:{
+                        datalabels:{
+                            display: false,
+                        }
+                    },
+                },
+            });
+        };
+
+        //半圓進度條
+        function doughnutProgress(targetProgress, chartID) {
+            let ctx = $("#DB_chart" + chartID);
+
+            let chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [targetProgress, 100-targetProgress],
+                        backgroundColor: [
+                            adjustColor(color[0]),
+                            'rgba(220, 220, 220, 0.5)'
+                        ],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: -90,
+                    }],
+                },
+                options: {
+                    chartType: "progress",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    centerTxtColor: $("#centerTxtColor").val(),
+                    plugins:{
+                        datalabels:{
+                            display: false,
+                        }
+                    },
+                },
+            });
+        };
+
+
+        function setSetWindows(type){
+            $("#DB_set >div.type").css({
+                'display':'none',
+            });
+            $("#DB_txtSet").css('display','block');
+            $("#DB_headerSet").css('display','block');
+            $("#DB_titleDataSet").css('display','block');
+            switch(type){
+                case "bar":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_barSet").css('display','block');
+                    $("#DB_tickSet").css('display','block');
+                    break;
+                case "line":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_lineSet").css('display','block');
+                    $("#DB_tickSet").css('display','block');
+                    break;
+                case "doughnut":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_doughnutSet").css('display','block');
+                    $("#DB_circleSet").css('display','block');
+                    break;
+                case "pie":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_pieSet").css('display','block');
+                    $("#DB_circleSet").css('display','block');
+                    break;
+                case "table":
+                    $("#DB_tableSet").css('display','block');
+                    break;
+                case "progress":
+                    $("#DB_progressSet").css('display','block');
+                    break;
+                case "key":
+                    $("#DB_keySet").css('display','block');
+                    break;
+                case "custom":
+                    $("#DB_customSet").css('display','block');
+                    break;
+                case "mix":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_mixSet").css('display','block');
+                    $("#DB_tickSet").css('display','block');
+                    break;
+                case "radar":
+                    $("#DB_chartSet").css('display','block');
+                    $("#DB_radarSet").css('display','block');
+                    break;
+            }
+
+        }
+
+        function delScript(input){
+            return input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+        }
+
+
+        //資料
+        //1~10隨機數字
+        function getRandomNumber() {
+            return Math.floor(Math.random() * 10) + 1;
+        };
+        //隨機產生數據
+        function generateRandomData(labelSize, datasetSize) {
+            // Helper function to generate a random float
+            function getRandomFloat(min, max) {
+                return (Math.random() * (max - min)) + min;
+            }
+
+            let labels = [];
+            let datasets = [];
+
+            for (let i = 0; i < labelSize; i++) {
+                labels.push(`Label ${i + 1}`);
+            }
+
+            for (let j = 0; j < datasetSize; j++) {
+                let dataLabel = `Data Label ${j + 1}`;
+                let data = [];
+                for (let k = 0; k < labelSize; k++) {
+                    data.push(parseFloat(getRandomFloat(1, 100).toFixed(2))); // Generate a random float
+                }
+                datasets.push({
+                    label: dataLabel,
+                    data: data
+                });
+            }
+
+            return {
+                labels: labels,
+                datasets: datasets
+            };
+        }
+
+
+        //對應按鈕和函數
+        $("#addWidgetBtn").on('click', function() {
+            resetALLSet();
+            addWidget(2,2);
+        });
+        $("#clearBtn").on('click', clearall);
+        $("#saveBtn").on('click', saveGrid);
+    </script>
+</body>
+
+</html>
